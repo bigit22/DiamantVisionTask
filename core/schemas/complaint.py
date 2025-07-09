@@ -11,10 +11,10 @@ class ComplaintCreate(BaseModel):
 
 
 class Complaint(ComplaintCreate):
-    status: Optional[StatusEnum]
-    timestamp: Optional[datetime]
-    sentiment: Optional[SentimentEnum]
-    category: Optional[CategoryEnum]
+    status: Optional[StatusEnum] = None
+    timestamp: Optional[datetime] = None
+    sentiment: Optional[SentimentEnum] = None
+    category: Optional[CategoryEnum] = None
 
     class Config:
         from_attributes = True
