@@ -12,8 +12,7 @@ class SentimentAnalysisService:
     async def build_complaint(complaint: ComplaintCreate) -> Complaint:
         try:
             result = await SentimentAnalysisService.analyze_sentiment(complaint)
-
-            sentiment_str = result.get('sentiment')
+            sentiment_str = result.get('sentiment', 'unknown')
 
             if not isinstance(sentiment_str, str):
                 sentiment_str = 'unknown'
@@ -23,31 +22,24 @@ class SentimentAnalysisService:
             except ValueError:
                 sentiment_enum = SentimentEnum.unknown
 
-            cmp = Complaint(
-                text=complaint.text,
-                status=StatusEnum.open,
-                timestamp=None,
-                sentiment=sentiment_str,
-                category=CategoryEnum.other,
-            )
-            return cmp
         except Exception as e:
             print(f'Exception occurred: {e}')
             traceback.print_exc()
-            cmp = Complaint(
-                text=complaint.text,
-                status=StatusEnum.open,
-                timestamp=None,
-                sentiment=SentimentEnum.unknown,
-                category=CategoryEnum.other,
-            )
-            return cmp
+            sentiment_str = SentimentEnum.unknown
+
+        return Complaint(
+            text=complaint.text,
+            status=StatusEnum.open,
+            timestamp=None,
+            sentiment=sentiment_str,
+            category=CategoryEnum.other,
+        )
 
     @staticmethod
     async def analyze_sentiment(complaint: ComplaintCreate):
         print('INFO:     analyze_sentiment was called from the REAL class')
 
-        async with AsyncClient() as client:
+        async with AsyncClient(timeout=20.0) as client:
             result = await client.post(
                 url=settings.SENTIMENT_ANALYSIS_URL,
                 headers={'apikey': settings.APILAYER_API_KEY},
