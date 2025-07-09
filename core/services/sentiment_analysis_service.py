@@ -14,6 +14,7 @@ class SentimentAnalysisService:
             result = await SentimentAnalysisService.analyze_sentiment(complaint)
 
             sentiment_str = result.get('sentiment')
+
             if not isinstance(sentiment_str, str):
                 sentiment_str = 'unknown'
 
@@ -53,4 +54,4 @@ class SentimentAnalysisService:
                 json={'text': complaint.text},
             )
 
-        return await result.json()
+        return result.json()
