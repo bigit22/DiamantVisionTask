@@ -1,6 +1,6 @@
 import traceback
 
-from httpx import AsyncClient
+from httpx import AsyncClient, Response
 
 from core.dependencies import settings
 from core.entities.enums import StatusEnum, SentimentEnum, CategoryEnum
@@ -40,10 +40,11 @@ class SentimentAnalysisService:
         print('INFO:     analyze_sentiment was called from the REAL class')
 
         async with AsyncClient(timeout=20.0) as client:
-            result = await client.post(
+            response: Response = await client.post(
                 url=settings.SENTIMENT_ANALYSIS_URL,
                 headers={'apikey': settings.APILAYER_API_KEY},
                 json={'text': complaint.text},
             )
+            result = response.json()
 
-        return result.json()
+        return result
